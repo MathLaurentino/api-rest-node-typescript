@@ -1,5 +1,9 @@
 import { server } from './server/Server';
 
-server.listen(3000, () => console.log('App rodando porta 3000!'));
+server.listen(process.env.PORT || 3333, () => {
+    console.log('App rodando na porta ' + process.env.PORT || 3333);
+});
 
 // yarn start
+// yarn tsc
+// node ./build/index.js
