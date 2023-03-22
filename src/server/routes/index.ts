@@ -9,9 +9,10 @@ router.get("/", (req, res) => {
     return res.send("casa!");
 });
 
-router.post("/cidades",
-    CidadeController.createValidation, 
-    CidadeController.create);
+
+router.get("/cidades", CidadeController.getAllValidation, CidadeController.getAll);
+router.post("/cidades", CidadeController.createValidation, CidadeController.create);
+
 
 export { router };
 

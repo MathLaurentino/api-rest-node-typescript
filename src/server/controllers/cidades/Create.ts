@@ -1,17 +1,12 @@
-import { Request, RequestHandler, Response } from "express";
-import { StatusCodes } from "http-status-codes";
+import { Request, Response } from "express";
 import * as yup from "yup";
+import { StatusCodes } from "http-status-codes";
 import { validation } from "../../shared/middleware";
 
 
 interface ICidade {
     nome: string;
     estado: string;
-}
-
-interface IFilter {
-    filter?: string;
-    limit?: number;
 }
 
 export const createValidation = validation({
@@ -31,5 +26,6 @@ export const createValidation = validation({
  */
 export const create = async (req: Request<{}, {}, ICidade>, res: Response) => { // RequestHandler
     console.log(req.body);
-    return res.send("Create!");
+    
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Não implementado!");
 };
