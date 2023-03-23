@@ -4,23 +4,23 @@ import { StatusCodes } from "http-status-codes";
 import { validation } from "../../shared/middleware";
 
 
-interface ICidade {
-    nome: string;
+interface IParamProps {
+    id?: number;
 }
 
-export const createValidation = validation( (getSchema) => ({
-    body: getSchema<ICidade>(yup.object().shape({
-        nome: yup.string().required().min(3),
+export const getByIdValidation = validation(getSchema => ({
+    params: getSchema<IParamProps>(yup.object().shape({
+        id: yup.number().integer().required().moreThan(0),
     })),
-})); 
+}));
 
 /**
  * Controlador Express para criar uma nova cidade.
  * Valida o corpo da requisição usando o esquema Yup e retorna um objeto de erros se a validação falhar.
  * Se a validação for bem-sucedida, imprime os dados validados e envia uma resposta.
  */
-export const create = async (req: Request<{}, {}, ICidade>, res: Response) => { // RequestHandler
-    console.log(req.body);
+export const getById = async (req: Request<IParamProps>, res: Response) => { // RequestHandler
+    console.log(req.params.id);
     
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Não implementado!");
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Ainda não implementado!");
 };

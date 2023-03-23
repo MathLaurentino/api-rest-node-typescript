@@ -10,13 +10,13 @@ interface IQueryProps {
     filter?: string;
 }
 
-export const getAllValidation = validation({
-    query: yup.object().shape({
+export const getAllValidation = validation((getSchema) => ({
+    query: getSchema<IQueryProps>(yup.object().shape({
         page: yup.number().optional().moreThan(0),
         limit: yup.number().optional().moreThan(0),
         filter: yup.string().optional(),
-    }),
-});
+    })), 
+}));
 
 /**
  * Controlador Express para criar uma nova cidade.
