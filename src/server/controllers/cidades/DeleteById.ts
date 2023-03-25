@@ -22,5 +22,5 @@ export const deleteByIdValidation = validation(getSchema => ({
 export const deleteById = async (req: Request<IParamProps>, res: Response) => { // RequestHandler
     console.log(req.params.id);
     
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Ainda não implementado!");
+    return res.status(StatusCodes.NO_CONTENT).json(1); // devolve o id apagado
 };
