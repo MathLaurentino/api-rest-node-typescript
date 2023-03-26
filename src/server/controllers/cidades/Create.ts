@@ -20,7 +20,6 @@ export const createValidation = validation( (getSchema) => ({
  * Se a validação for bem-sucedida, imprime os dados validados e envia uma resposta.
  */
 export const create = async (req: Request<{}, {}, ICidade>, res: Response) => { // RequestHandler
-    console.log(req.body);
-    
+
     return res.status(StatusCodes.CREATED).json(1); // devolve o id criado
 };

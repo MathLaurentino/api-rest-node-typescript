@@ -20,7 +20,6 @@ export const deleteByIdValidation = validation(getSchema => ({
  * Se a validação for bem-sucedida, imprime os dados validados e envia uma resposta.
  */
 export const deleteById = async (req: Request<IParamProps>, res: Response) => { // RequestHandler
-    console.log(req.params.id);
     
-    return res.status(StatusCodes.NO_CONTENT).json(1); // devolve o id apagado
+    return res.status(StatusCodes.NO_CONTENT).send();
 };

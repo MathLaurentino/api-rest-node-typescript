@@ -27,8 +27,6 @@ export const updateByIdValidation = validation(getSchema => ({
  * Se a validação for bem-sucedida, imprime os dados validados e envia uma resposta.
  */
 export const updateById = async (req: Request<IParamProps, {}, IBodyProps>, res: Response) => { // RequestHandler
-    console.log(req.params.id);
-    console.log(req.body.nome);
     
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Ainda não implementado!");
+    return res.status(StatusCodes.NO_CONTENT).send();
 };
