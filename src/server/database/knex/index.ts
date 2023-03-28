@@ -4,6 +4,10 @@ import "dotenv/config";
 
 import { development, production, test } from "./Environment";
 
+/**
+ * Seleciona qual ambiente será usado 
+ * (esta definido no arquivo .env)
+ */
 const getEnvironment = () => {
     switch (process.env.NODE_ENV) {
         case "production": return production;
@@ -13,4 +17,8 @@ const getEnvironment = () => {
     }
 };
 
+/**
+ * exporta uma instancia do Knex com as configurações definidas no 
+ * arquivo "./Environment" e selecionado na function getEnvironment
+ */
 export const Knex = knex(getEnvironment());

@@ -1,10 +1,12 @@
-import { ICidade, IPessoa, IUsuario } from "../../models";
+import { ICidade } from "../../models"; // IPessoa, IUsuario
 
-
+/**
+ * Define a tipagem para o Knex
+ */
 declare module "knex/types/tables" {
   interface Tables {
     // pessoa: IPessoa;
-    // cidade: ICidade;
+    cidade: ICidade;
     // usuario: IUsuario;
   }
 }

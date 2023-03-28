@@ -1,17 +1,32 @@
+/**
+ * Este módulo exporta funções relacionadas à atualização de itens e seu middleware de validação.
+ * @packageDocumentation
+ */
+
 import { Request, Response } from "express";
 import * as yup from "yup";
 import { StatusCodes } from "http-status-codes";
 import { validation } from "../../shared/middleware";
+import { ICidade } from "../../database/models";
 
-
+/** 
+ * Interface para os parâmetros de rota usados na função updateById
+ */
 interface IParamProps {
     id?: number;
 }
 
-interface IBodyProps {
-    nome: string;
-}
+/** 
+ * Interface para o corpo da solicitação usado na função updateById
+ * extends o ICidade mas omitindo o campo "id"
+ */
+interface IBodyProps extends Omit<ICidade, "id"> {}
 
+
+/**
+ * Retorna uma função de middleware que valida os parâmetros de rota e corpo de uma solicitação PUT usando Yup.
+ * @returns Função de middleware Express para validar os parâmetros de rota e corpo da solicitação
+ */
 export const updateByIdValidation = validation(getSchema => ({
     body: getSchema<IBodyProps>(yup.object().shape({
         nome: yup.string().required().min(3),
@@ -22,11 +37,11 @@ export const updateByIdValidation = validation(getSchema => ({
 }));
 
 /**
- * Controlador Express para criar uma nova cidade.
- * Valida o corpo da requisição usando o esquema Yup e retorna um objeto de erros se a validação falhar.
- * Se a validação for bem-sucedida, imprime os dados validados e envia uma resposta.
+ * Função que atualiza um item com base nos parâmetros de rota e corpo da solicitação
+ * @param req - Objeto de solicitação Express
+ * @param res - Objeto de resposta Express
+ * @returns Promessa que resolve em uma resposta vazia ou um erro
  */
-export const updateById = async (req: Request<IParamProps, {}, IBodyProps>, res: Response) => { // RequestHandler
-    
+export const updateById = async (req: Request<IParamProps, {}, IBodyProps>, res: Response): Promise<Response> => {
     return res.status(StatusCodes.NO_CONTENT).send();
 };

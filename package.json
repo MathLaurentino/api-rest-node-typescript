@@ -7,7 +7,11 @@
   "private": false,
   "scripts": {
     "start": "ts-node-dev ./src/index.ts",
-    "test": "jest"
+    "test": "jest",
+    "knex:rollback-all": "knex --knexfile ./src/server/database/knex/Environment.ts migrate:rollback --all",
+    "knex:rollback": "knex --knexfile ./src/server/database/knex/Environment.ts migrate:rollback",
+    "knex:migrate": "knex --knexfile ./src/server/database/knex/Environment.ts migrate:latest",
+    "knex:seed": "knex --knexfile ./src/server/database/knex/Environment.ts seed:run"
   },
   "dependencies": {
     "@types/jest": "^29.5.0",

@@ -1,25 +1,39 @@
+/**
+ * Este módulo exporta funções relacionadas à criação de itens e seu middleware de validação.
+ * @packageDocumentation
+ */
+
 import { Request, Response } from "express";
 import * as yup from "yup";
 import { StatusCodes } from "http-status-codes";
 import { validation } from "../../shared/middleware";
+import { ICidade } from "../../database/models";
 
 
-interface ICidade {
-    nome: string;
-}
+/** 
+ * Interface para o corpo da solicitação usado na função create
+ * extends o ICidade mas omitindo o campo "id"
+ */
+interface IBodyProps extends Omit<ICidade, "id"> {}
 
-export const createValidation = validation( (getSchema) => ({
-    body: getSchema<ICidade>(yup.object().shape({
+
+/**
+ * Retorna uma função de middleware que valida o corpo de uma solicitação POST usando Yup.
+ * @returns Função de middleware Express para validar o corpo da solicitação
+ */
+export const createValidation = validation((getSchema) => ({
+    body: getSchema<IBodyProps>(yup.object().shape({
         nome: yup.string().required().min(3),
     })),
 })); 
 
-/**
- * Controlador Express para criar uma nova cidade.
- * Valida o corpo da requisição usando o esquema Yup e retorna um objeto de erros se a validação falhar.
- * Se a validação for bem-sucedida, imprime os dados validados e envia uma resposta.
- */
-export const create = async (req: Request<{}, {}, ICidade>, res: Response) => { // RequestHandler
 
+/**
+ * Função que cria um item com base no corpo da solicitação
+ * @param req - Objeto de solicitação Express
+ * @param res - Objeto de resposta Express
+ * @returns Promessa que resolve em um objeto de item ou um erro
+ */
+export const create = async (req: Request<{}, {}, ICidade>, res: Response): Promise<Response> => {
     return res.status(StatusCodes.CREATED).json(1); // devolve o id criado
 };
