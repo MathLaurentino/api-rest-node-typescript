@@ -24,4 +24,12 @@ describe("Cidades - GetById", () => {
 
     });
 
+    it("Buscou um registro que nao existe", async () => {
+        const res1 = await testServer
+            .get("/cidades/9999")
+            .send();
+        
+        expect(res1.body).toHaveProperty("errors.default");
+    });
+
 });

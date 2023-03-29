@@ -7,6 +7,7 @@ import { Request, Response } from "express";
 import * as yup from "yup";
 import { StatusCodes } from "http-status-codes";
 import { validation } from "../../shared/middleware";
+import { CidadeProvider } from "../../database/providers/cidades";
 
 /** 
  * Interface para os parâmetros de rota usados na função getById
@@ -29,11 +30,27 @@ export const getByIdValidation = validation(getSchema => ({
  * Função que recupera um item com base nos parâmetros de rota da solicitação
  * @param req - Objeto de solicitação Express
  * @param res - Objeto de resposta Express
- * @returns Promessa que resolve em um objeto de item ou um erro
+ * @returns Promise que resolve em um objeto de item ou um erro
  */
 export const getById = async (req: Request<IParamProps>, res: Response): Promise<Response> => {
-    return res.status(StatusCodes.OK).json({
-        id: req.params.id,
-        nome: "Florania",
-    });
+
+    if (!req.params.id) {
+        return res.status(StatusCodes.BAD_REQUEST).json({
+            errors: {
+                default: "O parâmetro 'id' precisa ser informado."
+            }
+        });
+    }
+
+    const result = await CidadeProvider.getById(req.params.id);
+
+    if (result instanceof Error) {
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            errors: {
+                default: result.message
+            }
+        });
+    }
+
+    return res.status(StatusCodes.OK).json(result);
 };

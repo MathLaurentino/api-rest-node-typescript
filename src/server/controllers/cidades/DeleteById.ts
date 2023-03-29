@@ -7,6 +7,7 @@ import { Request, Response } from "express";
 import * as yup from "yup";
 import { StatusCodes } from "http-status-codes";
 import { validation } from "../../shared/middleware";
+import { CidadeProvider } from "../../database/providers/cidades";
 
 /** 
  * Interface para os parâmetros de rota usados na função deleteById
@@ -33,5 +34,28 @@ export const deleteByIdValidation = validation(getSchema => ({
  * @returns Promessa que resolve em uma resposta vazia ou um erro
  */
 export const deleteById = async (req: Request<IParamProps>, res: Response): Promise<Response> => {
-    return res.status(StatusCodes.NO_CONTENT).send();
+
+    if (!req.params.id) {
+        return res.status(StatusCodes.BAD_REQUEST).json({
+            errors: {
+                default: "O parâmetro 'id' precisa ser informado."
+            }
+        });
+    }
+
+    const result = await CidadeProvider.remove(req.params.id);
+
+    if (result instanceof Error) {
+
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            errors: {
+                default: result.message
+            }
+        });
+
+    } else {
+        return res.status(StatusCodes.NO_CONTENT).send();
+    }
+    
+
 };
