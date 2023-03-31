@@ -8,10 +8,10 @@ export const deleteById = async (id: number): Promise<void | Error> => {
 
         if (result > 0) return; // se o numero de linhas afetadas for maior que zero
 
-        return new Error("Falha ao apagar registro de pessoa");
+        return new Error("Falha ao apagar registro");
 
     } catch (error) {
         console.log(error);
-        return new Error("Falha ao apagar pessoa");
+        return new Error("Falha ao apagar registro");
     }
 };
