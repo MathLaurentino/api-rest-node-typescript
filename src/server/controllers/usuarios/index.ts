@@ -5,7 +5,7 @@
  */
 
 import * as singUp from "./SignUp";
-import * as singIn from "./SingIn";
+import * as signIn from "./SignIn";
 
 
 /**
@@ -14,5 +14,5 @@ import * as singIn from "./SingIn";
  */
 export const UsuariosController = {
     ...singUp,
-    ...singIn,
+    ...signIn,
 };
