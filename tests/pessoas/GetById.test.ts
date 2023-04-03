@@ -3,32 +3,64 @@ import { StatusCodes } from "http-status-codes";
 
 describe("Pessoas - GetById", () => {
 
-    let cidadeId: number | undefined = undefined;
-
+    let accessToken = "";
     beforeAll(async () => {
+
+        const email = "create-pessoas@gmail.com";
+        await testServer.post("/cadastrar").send({ email, senha: "123456", nome: "Teste" });
+        const signInRes = await testServer.post("/entrar").send({ email, senha: "123456" });
+
+        accessToken = signInRes.body.accessToken;
+
+    });
+
+    
+    let cidadeId: number | undefined = undefined;
+    beforeAll(async () => {
+
         const resCidade = await testServer
             .post("/cidades")
+            .set({ Authorization: `Bearer ${accessToken}` })
             .send({ nome: "Teste" });
 
         cidadeId = resCidade.body;
+
     });
 
 
-    it("Buscar registro por Id", async ()=> {
+    let pessoaId: string | undefined = undefined;
+    beforeAll(async () => {
 
         const res1 = await testServer
             .post("/pessoas")
+            .set({ Authorization: `Bearer ${accessToken}` })
             .send({
                 nomeCompleto: "testeJest",
                 email: "testeJest@gmail.com",
                 cidadeId
             });
+        pessoaId = res1.body;
 
-        expect(res1.statusCode).toEqual(StatusCodes.CREATED);
-        expect(typeof res1.body).toEqual("number");
+    });
+
+
+    it("tentou pegar dados por id sem usar token de autenticação", async () => {
+
+        const res1 = await testServer
+            .get("/pessoas/" + pessoaId)
+            .send();
+    
+        expect(res1.statusCode).toEqual(StatusCodes.UNAUTHORIZED);
+        expect(res1.body).toHaveProperty("errors.default");
+        
+    });
+
+
+    it("Buscar registro por Id", async ()=> {
 
         const resGetById = await testServer
-            .get("/pessoas/" + res1.body)
+            .get("/pessoas/" + pessoaId)
+            .set({ Authorization: `Bearer ${accessToken}` })
             .send();
 
         expect(resGetById.statusCode).toEqual(StatusCodes.OK);
@@ -40,6 +72,7 @@ describe("Pessoas - GetById", () => {
     it("Buscou um registro que nao existe", async () => {
         const res1 = await testServer
             .get("/pessoas/99999")
+            .set({ Authorization: `Bearer ${accessToken}` })
             .send();
         
         expect(res1.statusCode).toEqual(StatusCodes.INTERNAL_SERVER_ERROR);
@@ -51,6 +84,7 @@ describe("Pessoas - GetById", () => {
 
         const res1 = await testServer
             .get("/pessoas/r")
+            .set({ Authorization: `Bearer ${accessToken}` })
             .send();
 
         expect(res1.statusCode).toEqual(StatusCodes.BAD_REQUEST);
@@ -63,6 +97,7 @@ describe("Pessoas - GetById", () => {
 
         const res1 = await testServer
             .get("/pessoas/0")
+            .set({ Authorization: `Bearer ${accessToken}` })
             .send();
 
         expect(res1.statusCode).toEqual(StatusCodes.BAD_REQUEST);

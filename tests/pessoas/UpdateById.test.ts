@@ -3,32 +3,64 @@ import { StatusCodes } from "http-status-codes";
 
 describe("Cidades - UpdateById", () => {
 
-    let cidadeId: number | undefined = undefined;
-
+    let accessToken = "";
     beforeAll(async () => {
+
+        const email = "create-pessoas@gmail.com";
+        await testServer.post("/cadastrar").send({ email, senha: "123456", nome: "Teste" });
+        const signInRes = await testServer.post("/entrar").send({ email, senha: "123456" });
+
+        accessToken = signInRes.body.accessToken;
+
+    });
+
+    
+    let cidadeId: number | undefined = undefined;
+    beforeAll(async () => {
+
         const resCidade = await testServer
             .post("/cidades")
+            .set({ Authorization: `Bearer ${accessToken}` })
             .send({ nome: "Teste" });
 
         cidadeId = resCidade.body;
+
     });
 
 
-    it("Atualizar Registro", async ()=> {
+    let pessoaId: string | undefined = undefined;
+    beforeAll(async () => {
 
         const res1 = await testServer
             .post("/pessoas")
+            .set({ Authorization: `Bearer ${accessToken}` })
             .send({
                 nomeCompleto: "testeJest",
                 email: "testeJest@gmail.com",
                 cidadeId
             });
+        pessoaId = res1.body;
 
-        expect(res1.statusCode).toEqual(StatusCodes.CREATED);
-        expect(typeof res1.body).toEqual("number");
+    });
+
+
+    it("tentou pegar dados por id sem usar token de autenticação", async () => {
+
+        const res1 = await testServer
+            .get("/pessoas/" + pessoaId)
+            .send();
+    
+        expect(res1.statusCode).toEqual(StatusCodes.UNAUTHORIZED);
+        expect(res1.body).toHaveProperty("errors.default");
+        
+    });
+
+
+    it("Atualizar Registro", async ()=> {
 
         const resUpdateById = await testServer
-            .put("/pessoas/" + res1.body)
+            .put("/pessoas/" + pessoaId)
+            .set({ Authorization: `Bearer ${accessToken}` })
             .send({
                 nomeCompleto: "testeJest2",
                 email: "testeJest2@gmail.com",
@@ -41,19 +73,9 @@ describe("Cidades - UpdateById", () => {
 
     it("Passa idCidade igual a zero", async ()=> {
 
-        const res1 = await testServer
-            .post("/pessoas")
-            .send({
-                nomeCompleto: "testeJest",
-                email: "testeJest@gmail.com",
-                cidadeId
-            });
-
-        expect(res1.statusCode).toEqual(StatusCodes.CREATED);
-        expect(typeof res1.body).toEqual("number");
-
         const resUpdateById = await testServer
-            .put("/pessoas/" + res1.body)
+            .put("/pessoas/" + pessoaId)
+            .set({ Authorization: `Bearer ${accessToken}` })
             .send({
                 nomeCompleto: "testeJest2",
                 email: "testeJest2@gmail.com",
@@ -67,19 +89,9 @@ describe("Cidades - UpdateById", () => {
 
     it("Nome-Completo muito curto", async ()=> {
 
-        const res1 = await testServer
-            .post("/pessoas")
-            .send({
-                nomeCompleto: "testeJest3",
-                email: "testeJest3@gmail.com",
-                cidadeId
-            });
-
-        expect(res1.statusCode).toEqual(StatusCodes.CREATED);
-        expect(typeof res1.body).toEqual("number");
-
         const resUpdateById = await testServer
-            .put("/pessoas/" + res1.body)
+            .put("/pessoas/" + pessoaId)
+            .set({ Authorization: `Bearer ${accessToken}` })
             .send({
                 nomeCompleto: "te",
                 email: "testeJest@gmail.com",
@@ -93,19 +105,9 @@ describe("Cidades - UpdateById", () => {
 
     it("Id cidade nao existe", async ()=> {
 
-        const res1 = await testServer
-            .post("/pessoas")
-            .send({
-                nomeCompleto: "testeJest4",
-                email: "testeJest4@gmail.com",
-                cidadeId
-            });
-
-        expect(res1.statusCode).toEqual(StatusCodes.CREATED);
-        expect(typeof res1.body).toEqual("number");
-
         const resUpdateById = await testServer
-            .put("/pessoas/" + res1.body)
+            .put("/pessoas/" + pessoaId)
+            .set({ Authorization: `Bearer ${accessToken}` })
             .send({
                 nomeCompleto: "testeJest",
                 email: "testeJest@gmail.com",
