@@ -4,7 +4,7 @@ import { validation } from "../../shared/middleware";
 import * as yup from "yup";
 import { UsuarioProvider } from "../../database/providers/usuarios";
 import { StatusCodes } from "http-status-codes";
-import { PasswordCrypto } from "../../shared/services";
+import { JWTService, PasswordCrypto } from "../../shared/services";
 
 
 /**
@@ -34,10 +34,10 @@ export const signIn = async (req: Request<{},{}, IBodyProps>, res: Response): Pr
     const {email, senha} = req.body;
 
     // busca o usuário pelo email
-    const result = await UsuarioProvider.getByEmail(email);
+    const usuario = await UsuarioProvider.getByEmail(email);
 
     // caso não exista usuário com o email fornecido
-    if (result instanceof Error) {
+    if (usuario instanceof Error) {
         return res.status(StatusCodes.UNAUTHORIZED).json({
             errors: {
                 default: "email ou senha inválidos"
@@ -46,7 +46,7 @@ export const signIn = async (req: Request<{},{}, IBodyProps>, res: Response): Pr
     }
 
     // verifica a correspondência da senha
-    const passwordMatch = await PasswordCrypto.verifyPassword(senha, result.senha);
+    const passwordMatch = await PasswordCrypto.verifyPassword(senha, usuario.senha);
 
     // caso a senha não corresponda
     if (!passwordMatch) {
@@ -56,7 +56,23 @@ export const signIn = async (req: Request<{},{}, IBodyProps>, res: Response): Pr
             }
         });
     } 
+    
+    // caso a autentificação seja bem sucedida
+    else {
 
-    // caso a autenticação seja bem sucedida, retorna um token de acesso
-    return res.status(StatusCodes.OK).json({accessToken: "teste.teste.teste"});
+        // tenta gerar o token de acesso
+        const accessToken = JWTService.sign({uid: usuario.id});
+
+        // caso tenha dado erro ao gerar token de acesso
+        if (accessToken === "JWT_SECRET_NOT_FOUND") {
+            return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+                errors: {
+                    default: "Erro ao gerar token de acesso"
+                }
+            });
+        }
+
+        // gerado o token com secesso, retorna o token de acesso
+        return res.status(StatusCodes.OK).json({ accessToken });
+    }
 };
